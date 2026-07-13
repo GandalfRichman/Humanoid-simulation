@@ -1,5 +1,5 @@
 <mujoco model="g1_edu_u6">
-  <compiler angle="radian" meshdir="meshes" autolimits="true" />
+  <compiler angle="radian" meshdir="meshes" autolimits="true" usethread="false" />
   <option integrator="implicitfast" timestep="0.005" impratio="1.0" cone="pyramidal" jacobian="auto" solver="Newton" iterations="10" tolerance="1e-08" ls_iterations="20" ls_tolerance="0.01" gravity="0 0 -9.81" />
   <default>
     <default class="g1">

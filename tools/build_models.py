@@ -139,7 +139,11 @@ def build_edu():
     ftp = ET.parse(os.path.join(VENDOR, "inspire_ftp_converted.xml")).getroot()
 
     lucky.set("model", "g1_edu_u6")
-    lucky.find("compiler").set("meshdir", "meshes")
+    compiler = lucky.find("compiler")
+    compiler.set("meshdir", "meshes")
+    # single-threaded compile: pthread spawning deadlocks inside the
+    # synchronous mj_loadXML call in WASM workers
+    compiler.set("usethread", "false")
 
     # -- assets: point body meshes at the shared STL pool, drop Dex-3 hand
     #    meshes, add Inspire hand meshes
@@ -287,6 +291,7 @@ for _s in ("left", "right"):
 def build_basic():
     root = ET.parse(os.path.join(VENDOR, "g1_23dof_rev_1_0.xml")).getroot()
     root.set("model", "g1_basic")
+    root.find("compiler").set("usethread", "false")
 
     # strip the source file's bundled demo scene (floor, skybox, lights);
     # scenes are composed separately

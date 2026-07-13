@@ -1,0 +1,37 @@
+{
+  "name": "humanoid-simulation-studio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "models": "python3 tools/build_models.py",
+    "validate": "python3 tools/validate_policy.py"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.0.0",
+    "@react-three/fiber": "^9.0.0",
+    "blockly": "^12.0.0",
+    "lz-string": "^1.5.0",
+    "monaco-editor": "^0.52.0",
+    "mujoco": "^3.1.16",
+    "onnxruntime-web": "^1.22.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.180.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.6.0",
+    "vite": "^7.0.0",
+    "vite-plugin-static-copy": "^3.0.0"
+  }
+}

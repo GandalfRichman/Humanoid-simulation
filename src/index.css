@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: #09090b;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  overscroll-behavior: none;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 8px;
+  border: 2px solid #09090b;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Blockly dark-ish adjustments */
+.blocklyToolboxDiv {
+  background: #18181b !important;
+  color: #d4d4d8;
+}
+.blocklyTreeLabel {
+  font-size: 12px !important;
+}
+.blocklyFlyout {
+  background: #1f1f23 !important;
+}
+.blocklyMainBackground {
+  fill: #131316 !important;
+  stroke: none !important;
+}
+.blocklySvg {
+  background-color: #131316 !important;
+}
