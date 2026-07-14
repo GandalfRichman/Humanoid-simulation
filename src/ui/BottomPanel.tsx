@@ -106,7 +106,7 @@ function InspectorPane() {
   useEffect(() => setScrub(null), [joint?.name]);
 
   return (
-    <section className="flex w-[24rem] shrink-0 flex-col" aria-label="Inspector">
+    <section className="hidden w-[24rem] shrink-0 flex-col md:flex" aria-label="Inspector">
       <div className="border-b border-zinc-900 px-3 py-1">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">Inspector</span>
       </div>

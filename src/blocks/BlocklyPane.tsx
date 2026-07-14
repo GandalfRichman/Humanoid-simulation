@@ -7,6 +7,25 @@ import { MonacoPane } from "../editor/MonacoPane";
 
 let blocksDefined = false;
 
+const darkTheme = Blockly.Theme.defineTheme("g1dark", {
+  name: "g1dark",
+  base: Blockly.Themes.Zelos,
+  componentStyles: {
+    workspaceBackgroundColour: "#131316",
+    toolboxBackgroundColour: "#18181b",
+    toolboxForegroundColour: "#d4d4d8",
+    flyoutBackgroundColour: "#1f1f23",
+    flyoutForegroundColour: "#d4d4d8",
+    flyoutOpacity: 0.97,
+    scrollbarColour: "#3f3f46",
+    scrollbarOpacity: 0.5,
+    insertionMarkerColour: "#e4e4e7",
+    insertionMarkerOpacity: 0.4,
+    markerColour: "#38bdf8",
+    cursorColour: "#38bdf8",
+  },
+});
+
 export function BlocklyPane() {
   const hostRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<Blockly.WorkspaceSvg | null>(null);
@@ -26,7 +45,7 @@ export function BlocklyPane() {
       toolbox: buildToolbox(),
       media: "/blockly-media/", // self-hosted: no CDN fetches (COEP-safe)
       renderer: "zelos",
-      theme: Blockly.Themes.Zelos,
+      theme: darkTheme,
       grid: { spacing: 24, length: 2, colour: "#333a48", snap: true },
       zoom: { controls: true, wheel: true, startScale: 0.85 },
       trashcan: true,

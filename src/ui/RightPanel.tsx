@@ -15,7 +15,7 @@ export function RightPanel() {
   const setJsSource = useStore((s) => s.setJsSource);
 
   return (
-    <section className="flex w-[30rem] min-w-[22rem] shrink-0 flex-col border-l border-zinc-800 bg-zinc-950 xl:w-[34rem]">
+    <section className="flex w-[24rem] min-w-[18rem] shrink-0 flex-col border-l border-zinc-800 bg-zinc-950 lg:w-[30rem] xl:w-[34rem]">
       <div className="flex items-center border-b border-zinc-800">
         <div role="tablist" aria-label="Editor mode" className="flex">
           {(["js", "blocks"] as const).map((m) => (

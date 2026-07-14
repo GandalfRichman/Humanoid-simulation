@@ -9,7 +9,7 @@ type Tab = "robots" | "scenes" | "inspect";
 export function LeftRail() {
   const [tab, setTab] = useState<Tab>("robots");
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
+    <aside className="hidden w-60 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950 lg:flex">
       <nav className="flex border-b border-zinc-800" role="tablist" aria-label="Sidebar">
         {(["robots", "scenes", "inspect"] as Tab[]).map((t) => (
           <button

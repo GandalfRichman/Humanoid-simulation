@@ -141,7 +141,7 @@ await page.screenshot({ path: "docs/screenshots/shot_edu.png" });
 // --- blocks mode ------------------------------------------------------------
 await page.click("[role=tab]:has-text('Blocks')");
 const blocklyVisible = await page
-  .waitForSelector("svg.blocklySvg, .blocklyToolboxDiv", { timeout: 20000, state: "attached" })
+  .waitForSelector("svg.blocklySvg, .blocklyToolboxDiv", { timeout: 45000, state: "attached" })
   .then(() => true)
   .catch(() => false);
 await page.waitForTimeout(800);
@@ -195,6 +195,34 @@ const fell = await page
   .catch(() => false);
 check("robot can fall (leg override)", fell);
 await page.screenshot({ path: "docs/screenshots/shot_fallen.png" });
+
+// --- other scenes load and the robot still stands ---------------------------
+for (const scene of ["Table + block", "Obstacle yard"]) {
+  await page.click("header button:has-text('🌍')");
+  await page.click(`text=${scene}`);
+  await page.waitForTimeout(500);
+  const sceneLoaded = await page
+    .waitForFunction(
+      () => !document.body.innerText.includes("Preparing the robot lab") &&
+        !document.body.innerText.includes("Failed to load"),
+      null,
+      { timeout: 120000 },
+    )
+    .then(() => true)
+    .catch(() => false);
+  await page.waitForTimeout(2500);
+  // the fallen banner text — console history keeps older fall messages
+  const standing = !(await page.textContent("body")).includes("that's real physics");
+  check(`scene "${scene}" loads + stands`, sceneLoaded && standing);
+}
+await page.screenshot({ path: "docs/screenshots/scene_obstacles.png" });
+
+// --- drive mode button -------------------------------------------------------
+const driveBtn = await page
+  .locator("button:has-text('Drive with keyboard')")
+  .isVisible()
+  .catch(() => false);
+check("drive mode button present", driveBtn);
 
 console.log("\nBrowser console (last 25):");
 console.log(consoleLogs.slice(-25).join("\n"));

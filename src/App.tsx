@@ -5,6 +5,7 @@ import { RightPanel } from "./ui/RightPanel";
 import { BottomPanel } from "./ui/BottomPanel";
 import { LoadingOverlay } from "./ui/LoadingOverlay";
 import { Viewport } from "./render/Viewport";
+import { DriveOverlay } from "./ui/DriveOverlay";
 import { useStore } from "./state/store";
 import { bootApp, resetSim } from "./state/actions";
 
@@ -24,6 +25,7 @@ export default function App() {
         <main className="relative min-w-0 flex-1">
           <Viewport />
           <FallenBanner />
+          <DriveOverlay />
           <Onboarding />
           <LoadingOverlay />
         </main>

@@ -23,21 +23,10 @@ body,
   background: transparent;
 }
 
-/* Blockly dark-ish adjustments */
-.blocklyToolboxDiv {
-  background: #18181b !important;
-  color: #d4d4d8;
-}
+/* Blockly fine-tuning on top of the g1dark theme */
 .blocklyTreeLabel {
   font-size: 12px !important;
 }
-.blocklyFlyout {
-  background: #1f1f23 !important;
-}
-.blocklyMainBackground {
-  fill: #131316 !important;
-  stroke: none !important;
-}
-.blocklySvg {
-  background-color: #131316 !important;
+.blocklyToolboxCategory:hover {
+  background: #27272a;
 }

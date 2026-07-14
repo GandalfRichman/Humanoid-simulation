@@ -31,6 +31,8 @@ behavior authored in **JavaScript** (Monaco) or **drag-and-drop blocks**
   (lz-string compressed — nothing leaves the browser), file export/import
   fallback for large projects.
 - **Scenes**: open floor, table + graspable block, obstacle yard.
+- **Drive mode**: keyboard teleop (W/S/A/D + Q/E) streaming joystick
+  commands straight to the balance policy.
 
 ## Architecture
 
