@@ -148,6 +148,9 @@ export class SimClient {
 
   /** RPC from the main thread (Inspector scrubbing, quick controls). */
   call<T = unknown>(call: RobotCall): Promise<T> {
+    // A call issued while the worker is being swapped (robot/scene reload)
+    // would otherwise post into the void and hang forever.
+    if (!this.worker) return Promise.reject(new Error("Simulation is reloading."));
     const rpcId = this.rpcSeq++;
     return new Promise<T>((resolve, reject) => {
       this.rpcPending.set(rpcId, { resolve: resolve as (v: unknown) => void, reject });

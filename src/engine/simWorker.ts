@@ -756,7 +756,14 @@ function handGuard(): string | null {
 function handleCall(req: RpcRequest, port: MessagePort | null) {
   const { rpcId, call } = req;
   const task = makeTask(rpcId, port);
-  if (!model) return task.fail("Simulation is still loading.");
+  // Not-ready guard: reject clearly instead of ever answering from a
+  // half-initialised state (e.g. model compiled but joint metadata not yet
+  // built), which is what makes listJoints() look like it "returned nothing".
+  if (!model || joints.length === 0) {
+    return task.fail(
+      "The robot isn't loaded yet — wait for loading to finish (or press Reset) before calling the robot API.",
+    );
+  }
 
   try {
     switch (call.kind) {
