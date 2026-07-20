@@ -196,6 +196,33 @@ const fell = await page
 check("robot can fall (leg override)", fell);
 await page.screenshot({ path: "docs/screenshots/shot_fallen.png" });
 
+// --- synchronous API (brief §5) + detached-promise completion ---------------
+await page.click("[role=tab]:has-text('JavaScript')");
+await page.click("button:has-text('Reset')");
+await page.evaluate(() => {
+  window.monaco.editor.getModels()[0].setValue(
+    // getters are synchronous (no await); detached main().catch(), not awaited
+    "async function main() {\n" +
+    "  const j = robot.listJoints();\n" +
+    "  if (!Array.isArray(j) || j.length === 0) throw new Error('listJoints not sync-array');\n" +
+    "  const a = robot.getJoint(j.find(n => n.includes('elbow')));\n" +
+    "  if (typeof a !== 'number') throw new Error('getJoint not sync-number');\n" +
+    "  await robot.moveJoint(j.find(n => n.includes('elbow')), a + 20, 0.6);\n" +
+    "  print('SYNCAPI_OK jointCount=' + j.length + ' elbow=' + a.toFixed(1));\n" +
+    "}\n" +
+    "main().catch(e => print('ERR ' + e.message));"
+  );
+});
+await page.click("button:has-text('Run')");
+const syncOk = await page
+  .waitForFunction(() => {
+    const m = document.body.innerText.match(/SYNCAPI_OK jointCount=(\d+)/);
+    return m ? Number(m[1]) > 0 : false;
+  }, null, { timeout: 30000 })
+  .then(() => true)
+  .catch(() => false);
+check("synchronous getters + detached main() complete", syncOk);
+
 // --- other scenes load and the robot still stands ---------------------------
 for (const scene of ["Table + block", "Obstacle yard"]) {
   await page.click("header button:has-text('🌍')");

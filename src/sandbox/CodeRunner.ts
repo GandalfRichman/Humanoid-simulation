@@ -51,8 +51,15 @@ export class CodeRunner {
       events.onDone();
     };
 
+    const meta = simClient.buildCodeMeta();
+    if (!meta) {
+      events.onError("The robot isn't loaded yet — wait for loading to finish, then Run.", null);
+      this.stop("no-model");
+      events.onDone();
+      return;
+    }
     const simPort = simClient.connectCodePort();
-    this.worker.postMessage({ type: "run", source, simPort }, [simPort]);
+    this.worker.postMessage({ type: "run", source, simPort, meta }, [simPort]);
 
     this.watchdog = window.setInterval(() => {
       if (!this.worker) return;

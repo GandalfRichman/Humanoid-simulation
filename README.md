@@ -87,28 +87,42 @@ ends on the floor. `walk/stand/setVelocity` gives it back.
 
 ## The `robot` API
 
+Motion/time methods are **async** (await them — they resolve when the motion
+completes). Read/instant methods are **synchronous** (per brief §5): getters
+read a live snapshot of sim state, instant setters fire-and-forget with
+synchronous validation. Awaiting a synchronous method still works, so both
+`robot.getJoint(x)` and `await robot.getJoint(x)` are valid.
+
 ```js
+// async — resolves on completion
 await robot.walkForward(meters, speed?)   // learned policy does the stepping
 await robot.walkBackward(meters, speed?)
 await robot.turn(degrees)                 // + = left
 await robot.stand()
-robot.setVelocity(vx, vy, yawRate)        // stream a joystick command
-
-robot.setJoint(name, degrees)
 await robot.moveJoint(name, degrees, seconds)
-await robot.getJoint(name)
-await robot.listJoints() / robot.listSensors()
-await robot.getSensor('imu-pelvis-angular-velocity')  // + base_* virtuals
-await robot.getPose()
 await robot.wait(seconds)
-print(...)
+await robot.grasp(hand, strength?)        // EDU U6; resolves when fingers settle
+await robot.release(hand)                 // EDU U6
 
-// G1 EDU U6 only (friendly error on Basic):
-robot.setFinger(hand, finger, amount)     // 0 open … 1 curled
-await robot.grasp(hand, strength?)        // resolves when fingers settle
-await robot.release(hand)
-await robot.getFingerForce(hand, finger)  // fingertip touch sensor, N
+// synchronous — return a value / void immediately
+robot.listJoints()                        // string[]
+robot.listSensors()                       // string[]
+robot.getJoint(name)                      // number (degrees)
+robot.getSensor('imu-pelvis-angular-velocity')  // number | number[]; + base_* virtuals
+robot.getPose()                           // { position, quaternion, yawDeg }
+robot.setJoint(name, degrees)             // void
+robot.setVelocity(vx, vy, yawRate)        // void — stream a joystick command
+robot.setFinger(hand, finger, amount)     // void; EDU U6; 0 open … 1 curled
+robot.getFingerForce(hand, finger)        // number (N); EDU U6
+print(...)
 ```
+
+`getSensor(name)` matches exactly, then case-insensitively by substring, then
+by sensor kind (`gyro`/`accelerometer`/`touch`), so `getSensor('imu')` or
+`getSensor('gyro')` find the right sensor without needing the full MJCF name.
+
+The sandbox keeps running until the program is actually idle, so a detached
+`main().catch(...)` (instead of `await main()`) completes correctly.
 
 ## Development
 

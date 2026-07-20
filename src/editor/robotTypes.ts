@@ -27,16 +27,16 @@ declare const robot: {
   setJoint(name: JointName, degrees: number): void;
   /** Smoothly move a joint to an angle in degrees over a duration in seconds. */
   moveJoint(name: JointName, degrees: number, seconds: number): Promise<void>;
-  /** Current joint angle in degrees. */
-  getJoint(name: JointName): Promise<number>;
+  /** Current joint angle in degrees (reads live simulated state). */
+  getJoint(name: JointName): number;
   /** Names of every joint on this robot. */
-  listJoints(): Promise<string[]>;
+  listJoints(): string[];
   /** Names of every sensor (IMU gyro/accelerometer, touch, base_* virtuals). */
-  listSensors(): Promise<string[]>;
+  listSensors(): string[];
   /** Read a sensor: scalars return a number, vector sensors an array. */
-  getSensor(name: string): Promise<number | number[]>;
+  getSensor(name: string): number | number[];
   /** World pose of the robot's pelvis. */
-  getPose(): Promise<{ position: number[]; quaternion: number[]; yawDeg: number }>;
+  getPose(): { position: number[]; quaternion: number[]; yawDeg: number };
   /** Pause the program for simulated seconds (respects sim speed). */
   wait(seconds: number): Promise<void>;
 __HANDS__};
@@ -54,7 +54,7 @@ const HANDS_EDU = `
   /** Open the hand. */
   release(hand: 'left' | 'right'): Promise<void>;
   /** Fingertip contact force in newtons from the touch sensor. */
-  getFingerForce(hand: 'left' | 'right', finger: FingerName): Promise<number>;
+  getFingerForce(hand: 'left' | 'right', finger: FingerName): number;
 `;
 
 const HANDS_BASIC = `

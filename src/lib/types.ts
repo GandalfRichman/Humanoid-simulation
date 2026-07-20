@@ -183,8 +183,34 @@ export type RpcResponse =
 /* Main <-> code worker protocol                                       */
 /* ------------------------------------------------------------------ */
 
+/** Compact metadata the code worker needs to answer synchronous getters and
+ *  validate synchronous setters without any round-trip to the sim worker. */
+export interface CodeMeta {
+  robotId: RobotId;
+  hasHands: boolean;
+  /** ordered exactly like the live-state joint-angle block */
+  joints: {
+    name: string;
+    range: [number, number]; // degrees
+    actuated: boolean;
+    policyOwned: boolean;
+    group: JointMeta["group"];
+  }[];
+  sensors: { name: string; adr: number; dim: number; kind: string }[];
+}
+
+/**
+ * Live sim state pushed sim-worker -> code-worker over the RPC port so the
+ * synchronous getters can read a recent snapshot locally. Float32 layout:
+ *   [ time, fallen,
+ *     baseP(3), baseQuat(4, wxyz), baseLinVel(3), baseAngVel(3),   // 13
+ *     jointAngles(nJoint, rad), sensordata(nsensordata) ]
+ */
+export const CODE_STATE_BASE = 13;
+export const CODE_STATE_HEADER = 2;
+
 export type ToCode =
-  | { type: "run"; source: string; simPort: MessagePort }
+  | { type: "run"; source: string; simPort: MessagePort; meta: CodeMeta }
   | { type: "ping" };
 
 export type FromCode =
@@ -192,6 +218,9 @@ export type FromCode =
   | { type: "done" }
   | { type: "runtimeError"; message: string; line: number | null }
   | { type: "pong" };
+
+/** Sim -> code over the port: either an RPC response or a live-state frame. */
+export type PortToCode = RpcResponse | { state: Float32Array };
 
 /* ------------------------------------------------------------------ */
 /* Console + project                                                   */

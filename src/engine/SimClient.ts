@@ -1,4 +1,5 @@
 import type {
+  CodeMeta,
   FromSim,
   RobotCall,
   RobotId,
@@ -138,6 +139,25 @@ export class SimClient {
   stepOnce(count = 1) { this.send({ type: "stepOnce", count }); }
   setSpeed(speed: number) { this.send({ type: "setSpeed", speed }); }
   cancelTasks(reason: string) { this.send({ type: "cancelTasks", reason }); }
+
+  /** Metadata a code worker needs to answer synchronous getters/validate
+   *  setters locally. Null until a model is loaded. */
+  buildCodeMeta(): CodeMeta | null {
+    const spec = this.spec;
+    if (!spec) return null;
+    return {
+      robotId: spec.robotId,
+      hasHands: spec.robotId === "g1_edu_u6",
+      joints: spec.joints.map((j) => ({
+        name: j.name,
+        range: j.range,
+        actuated: j.actuated,
+        policyOwned: j.policyOwned,
+        group: j.group,
+      })),
+      sensors: spec.sensors.map((s) => ({ name: s.name, adr: s.adr, dim: s.dim, kind: s.kind })),
+    };
+  }
 
   /** MessagePort for a user-code worker to issue robot RPCs directly. */
   connectCodePort(): MessagePort {

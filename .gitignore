@@ -4,3 +4,6 @@ dist/
 *.log
 .vercel/
 __pycache__/
+
+# e2e run artifacts
+docs/screenshots/shot_*.png

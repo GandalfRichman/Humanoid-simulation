@@ -86,6 +86,10 @@ let sensors: SensorMeta[] = [];
 let nbody = 0;
 let nsensordata = 0;
 
+/** code-worker state mirror (for synchronous getters) */
+let codePorts: MessagePort[] = [];
+let codeStateBuf: Float32Array | null = null;
+
 /** frame publishing */
 let sab: SharedArrayBuffer | null = null;
 let sabCtl: Int32Array | null = null;
@@ -714,6 +718,32 @@ function publishFrame(force = false) {
     fillFrame(buf);
     post({ type: "frame", buffer: buf } as FromSim, [buf.buffer]);
   }
+  publishCodeState();
+}
+
+/** Compact state block feeding the code worker's synchronous getters.
+ *  Layout matches CODE_STATE_* in types.ts. */
+function buildCodeState(): Float32Array {
+  const buf = codeStateBuf ?? (codeStateBuf = new Float32Array(2 + 13 + joints.length + nsensordata));
+  const qpos = data.qpos, qvel = data.qvel, sd = data.sensordata;
+  buf[0] = data.time;
+  buf[1] = fallen ? 1 : 0;
+  // base pose + velocity (world frame), from the free joint
+  for (let i = 0; i < 7; i++) buf[2 + i] = qpos[i];
+  for (let i = 0; i < 6; i++) buf[9 + i] = qvel[i];
+  let o = 2 + 13;
+  for (const j of joints) buf[o++] = qpos[j.qposAdr];
+  for (let i = 0; i < nsensordata; i++) buf[o++] = sd[i];
+  return buf;
+}
+
+function publishCodeState() {
+  if (!codePorts.length || !model) return;
+  const buf = buildCodeState();
+  for (const port of codePorts) {
+    // copy so each port gets an independent snapshot (structured clone)
+    port.postMessage({ state: buf.slice(0) });
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -1013,9 +1043,15 @@ self.onmessage = (ev: MessageEvent<ToSim | { type: "rpc"; req: RpcRequest }>) =>
       speed = msg.speed;
       wallAnchor = performance.now();
       break;
-    case "connectCode":
-      msg.port.onmessage = (e: MessageEvent<RpcRequest>) => handleCall(e.data, msg.port);
+    case "connectCode": {
+      const port = msg.port;
+      port.onmessage = (e: MessageEvent<RpcRequest>) => handleCall(e.data, port);
+      // one code worker runs at a time (the runner stops the prior one), so
+      // replace rather than accumulate — avoids pushing to dead ports
+      codePorts = [port];
+      if (model) port.postMessage({ state: buildCodeState().slice(0) });
       break;
+    }
     case "cancelTasks":
       cancelAllTasks(msg.reason);
       cmd.fill(0);
